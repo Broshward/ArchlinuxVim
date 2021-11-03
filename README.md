@@ -1,7 +1,7 @@
 # ArchlinuxVim
 Archlinux distro for VIM SBC Platform of Khadas compile.
 
-I took Kernel from Ubutu for VIM3 SBC of KHADAS repository https://dl.khadas.com/Firmware/VIM3/Ubuntu/SD_USB/VIM3_Ubuntu-gnome-focal_Linux-5.12_arm64_SD-USB_V1.0.5-210430.img.xz
+I took Kernel from Ubutu for VIM3 SBC of KHADAS repository https://dl.khadas.com/Firmware/VIM3/Ubuntu/SD_USB/VIM3_Ubuntu-server-focal_Linux-5.12_arm64_SD-USB_V1.0.5-210430.img.xz
 I took Archlinux core Filesystem for ODROID-N2 Friendly ARM device  http://os.archlinuxarm.org/os/ArchLinuxARM-odroid-n2-latest.tar.gz 
 And I have to connect Ubuntu kernel images and Archlinux and this seems almost working.
 
@@ -18,18 +18,24 @@ While now I hav't HDMI devices for checking graphical working, I use VIM3 device
 
 
 The /boot must be separate FAT partiotion for compability with preinstalled in VIM devices U-boot loader and settings of one. 
-It's pity but the KHADAS company thinks what first partition of flashes and SD memories can be FAT only and made default u-boot preferences FAT-dependent.
-Therefore format first partition of load device to vfat and after cloning ArchLinuxVIM repo copy /boot/* directory to this vfat device:
-# mkfs.vfat /dev/yourdevice1
-# mount /dev/yourdevice1 /mnt/boot/
-# cp -r boot/* /mnt/boot/
-# umount /mnt/boot/
+It's pity but the KHADAS company thinks what first partition of flashes and SD memories can be FAT only and made default u-boot preferences are FAT-dependent.
+Others filesystem parts you must copy to another partition with your favorite Linux filesystem or simply cloning git repo to it.
 
-Others filesystem parts copy to another partition with your favorite Linux filesystem.
 # mkfs.ext4 /dev/yourdevice2
 # mount /dev/yourdevice2 /mnt/root/
-# cp -a root/* /mnt/root/
+# cp -a * /mnt/root/
+
+or cloning to target device directly:
+# git clone https://github.com/leha2001/ArchlinuxVim.git /mnt/root/
+
+
+After root partition prepared format first partition of your tarlet device to vfat and copy /boot/* directory to it.
+# mkfs.vfat /dev/yourdevice1
+# mount /dev/yourdevice1 /mnt/boot/
+# cp -r /mnt/root/boot/* /mnt/boot/
+# umount /mnt/boot/
 # umount /mnt/root/
+
 
 !!!! Have a more attention to rootdev variable at /boot/env.txt and root device at /etc/fstab files when make hand copy to formatted flash device.
 
