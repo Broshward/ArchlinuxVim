@@ -1,0 +1,39 @@
+#!/bin/bash
+
+if [ $1 = '' ]; 
+	then echo -e "Usage: archlinuxvim_install /dev/targetdevice \n\nFor example:\n# archlinuxvim_install /dev/sdc\n"; 
+	exit -1;
+fi
+
+device=$1
+if ls $device >/dev/null 2>&1; 
+	then echo -e; 
+	else echo 'Target device not found!';
+	exit -2;
+fi;
+
+echo 'Target device is '$device
+
+#dd if=/dev/zero of=$device bs=512 count=1 # Remove MBR
+#
+#(
+#echo o		# Create a new empty DOS partition table
+#echo n		# Create a new partotion
+#echo p		# Primary partition
+#echo 1		# Number 1 for FAT
+#echo		# Default begin sector
+#echo +256M	# Size of FAT partition
+#echo n		# New part
+#echo p		# Primary
+#echo 2		# Number 2 for rootfs
+#echo		# begin sector is default
+#echo		# end   sector is default
+#echo w		# write MBR
+#) | fdisk $device
+
+ROOT=/mnt/archlinuxvim/root
+mkdir -p $ROOT
+mount $device2 $ROOT 
+
+
+

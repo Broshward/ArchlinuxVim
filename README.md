@@ -17,7 +17,13 @@ Now I happy have VIM3Pro SBC and I will made for this.
 While now I hav't HDMI devices for checking graphical working, I use VIM3 device throught ethernet ssh and debug console only.
 
 
-The /boot must be separate FAT partiotion for compability with preinstalled in VIM devices U-boot loader and settings of one. 
+You can simply load image to your install SD or USB parts with dd command:
+# dd if=ArchLinuxVIM-X.XX.img of=/dev/yourdevice bs=8M
+
+Or setup all manually. For this read it completely.
+
+
+The /boot must be separate FAT partiotion for compability with preinstalled in VIM devices U-boot bootloader and settings of one. 
 It's pity but the KHADAS company thinks what first partition of flashes and SD memories can be FAT only and made default u-boot preferences are FAT-dependent.
 Others filesystem parts you must copy to another partition with your favorite Linux filesystem or simply cloning git repo to it.
 
@@ -37,10 +43,6 @@ And after copy in it boot.img image for working correctly.
 
 
 !!!! Have a more attention to rootdev variable at /boot/env.txt and right root device at /etc/fstab files when make hand copy and partitioning your device.
-
-
-Also you can simply load image to your install parts with dd command:
-# dd if=ArchLinuxVIM-X.XX.img of=/dev/yourdevice bs=8M
 
 
 Use 'root' password for root login. Enjoy! :)
