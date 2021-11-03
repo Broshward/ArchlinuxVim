@@ -29,15 +29,18 @@ or cloning to target device directly:
 # git clone https://github.com/leha2001/ArchlinuxVim.git /mnt/root/
 
 
-After root partition prepared format first partition of your tarlet device to vfat and copy /boot/* directory to it.
-# mkfs.vfat /dev/yourdevice1
-# mount /dev/yourdevice1 /mnt/boot/
-# cp -r /mnt/root/boot/* /mnt/boot/
-# umount /mnt/boot/
-# umount /mnt/root/
+Unfortunately, but simply to copy "boot" partition is impossibe. Because one contains something for u-boot load process needed. Probably there placed U-BOOT himself.
+Therefore make with fdisk first partition of device with size of 256 Mb.
+And after copy in it boot.img image for working correctly.
+
+# dd if=/mnt/root/boot.img of=/dev/yourdevice1 bs=8M
 
 
-!!!! Have a more attention to rootdev variable at /boot/env.txt and root device at /etc/fstab files when make hand copy to formatted flash device.
+!!!! Have a more attention to rootdev variable at /boot/env.txt and right root device at /etc/fstab files when make hand copy and partitioning your device.
+
 
 Also you can simply load image to your install parts with dd command:
 # dd if=ArchLinuxVIM-X.XX.img of=/dev/yourdevice bs=8M
+
+
+Use 'root' password for root login. Enjoy! :)
