@@ -33,7 +33,28 @@ echo 'Target device is '$device
 
 ROOT=/mnt/archlinuxvim/root
 mkdir -p $ROOT
-mount $device2 $ROOT 
+mount $device'2' $ROOT 
+echo 'Download ArchLinux core filesystem to target...'
+wget -c -P $ROOT http://os.archlinuxarm.org/os/ArchLinuxARM-odroid-n2-latest.tar.gz
+echo 'Unpackaging...'
+tar -xvf $ROOT/ArchLinuxARM-odroid-n2-latest.tar.gz -C $ROOT
+#rm $ROOT/ArchLinuxARM-odroid-n2-latest.tar.gz
+
+dev=`echo $device | cut -d / -f 3`
+rootdev_uuid=`ls -l /dev/disk/by-uuid/ |grep $dev | cut -d ' ' -f 10`
+
+echo 'UUID of root device is '$rootdev_uuid
+
+cp etc/fstab $ROOT/etc/
+
+wget -c -P $ROOT 
+
+
+
+
+
+#umount $ROOT 
+#rm -rf /mnt/archlinuxvim/
 
 
 
