@@ -1,4 +1,4 @@
 # <file system>                              <mount point>   <type>  <options>                                                             <dump>  <pass>
 tmpfs                                          /tmp            tmpfs   defaults,nosuid                                                          0   0
-UUID=b75fac53-5e3f-4d46-aa8d-65b2880e3b47      /               auto    defaults,noatime,nodiratime,commit=600,errors=remount-ro,x-gvfs-hide     0   1
-UUID=F048-DD0A                                 /boot           vfat    defaults                                                                 0   2
+UUID=${ROOT_UUID}      /               auto    defaults,noatime,nodiratime,commit=600,errors=remount-ro,x-gvfs-hide     0   1
+UUID=${BOOT_UUID}                                 /boot           vfat    defaults                                                                 0   2

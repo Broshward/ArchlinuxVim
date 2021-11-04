@@ -13,48 +13,60 @@ if ls $device >/dev/null 2>&1;
 fi;
 
 echo 'Target device is '$device
+BOOT=$device'1'
+ROOT=$device'2'
 
-#dd if=/dev/zero of=$device bs=512 count=1 # Remove MBR
-#
-#(
-#echo o		# Create a new empty DOS partition table
-#echo n		# Create a new partotion
-#echo p		# Primary partition
-#echo 1		# Number 1 for FAT
-#echo		# Default begin sector
-#echo +256M	# Size of FAT partition
-#echo n		# New part
-#echo p		# Primary
-#echo 2		# Number 2 for rootfs
-#echo		# begin sector is default
-#echo		# end   sector is default
-#echo w		# write MBR
-#) | fdisk $device
+echo 'Download ArchLinux core filesystem...'
+wget -c http://os.archlinuxarm.org/os/ArchLinuxARM-odroid-n2-latest.tar.gz
 
-ROOT=/mnt/archlinuxvim/root
-mkdir -p $ROOT
-mount $device'2' $ROOT 
-echo 'Download ArchLinux core filesystem to target...'
-wget -c -P $ROOT http://os.archlinuxarm.org/os/ArchLinuxARM-odroid-n2-latest.tar.gz
-echo 'Unpackaging...'
-tar -xvf $ROOT/ArchLinuxARM-odroid-n2-latest.tar.gz -C $ROOT
-#rm $ROOT/ArchLinuxARM-odroid-n2-latest.tar.gz
+dd if=/dev/zero of=$device bs=512 count=1 # Remove MBR
 
-dev=`echo $device | cut -d / -f 3`
-rootdev_uuid=`ls -l /dev/disk/by-uuid/ |grep $dev | cut -d ' ' -f 10`
+(
+echo o		# Create a new empty DOS partition table
+echo n		# Create a new partotion
+echo p		# Primary partition
+echo 1		# Number 1 for FAT
+echo		# Default begin sector
+echo +256M	# Size of FAT partition
+echo n		# New part
+echo p		# Primary
+echo 2		# Number 2 for rootfs
+echo		# begin sector is default
+echo		# end   sector is default
+echo w		# write MBR
+) | fdisk $device
 
-echo 'UUID of root device is '$rootdev_uuid
+echo 'Create boot partition from image...'
+xzcat boot.img.xz | dd of=$BOOT
 
-cp etc/fstab $ROOT/etc/
+ROOT=/mnt/archlinuxvim/root # Temporary dir for mount
+mkdir -p $ROOTDIR
+mount $ROOT $ROOTDIR 
+echo 'Unpackaging root to target...'
+tar -xvf ArchLinuxARM-odroid-n2-latest.tar.gz -C $ROOTDIR >/dev/null 
+rm $ROOTDIR/boot/*
+rm $ROOTDIR/lib/modules/*
+rm $ROOTDIR/usr/src/*
+tar -xvf modules.5.12.0.tar.xz -C $ROOTDIR
+tar -xvf linux-headers.5.12.0.tar.xz -C $ROOTDIR
 
-wget -c -P $ROOT 
+BOOT=/mnt/archlinuxvim/boot # Temporary dir for mount
+mkdir -p $BOOTDIR
+mount $BOOT $BOOTDIR 
+
+ROOT_UUID=$(ls -l /dev/disk/by-uuid/ |grep $(echo $ROOT | cut -d / -f 3) | cut -d ' ' -f 10)
+BOOT_UUID=$(ls -l /dev/disk/by-uuid/ |grep $(echo $BOOT | cut -d / -f 3) | cut -d ' ' -f 10)
+echo 'UUID of ROOT device is '$ROOT_UUID
+echo 'UUID of BOOT device is '$BOOT_UUID
+
+eval "cat <<EOF $(<boot/env.txt_template) EOF" 2> /dev/null > $BOOTDIR/env.txt
+eval "cat <<EOF $(<etc/fstab_template) EOF" 2> /dev/null > $ROOTDIR/etc/fstab
 
 
+umount $ROOTDIR 
+umount $BOOTDIR 
 
-
-
-#umount $ROOT 
-#rm -rf /mnt/archlinuxvim/
+rm -rf /mnt/archlinuxvim/
 
 
 
