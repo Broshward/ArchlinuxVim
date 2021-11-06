@@ -6,7 +6,7 @@ if [ $1 = '' ];
 fi
 
 device=$1
-if ![ -b $device ]; 
+if [ ! -b $device ]; 
 	then echo -e; 
 	else echo 'Target device not found!';
 	exit -2;
