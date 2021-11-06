@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ $1 = '' ]; 
+if [ -z $1 ]; 
 	then echo -e "Usage: archlinuxvim_install /dev/targetdevice \n\nFor example:\n# archlinuxvim_install /dev/sdc\n"; 
 	exit -1;
 fi
@@ -13,8 +13,14 @@ if [ -b $device ];
 fi;
 
 echo 'Target device is '$device
-if [ $device = '/dev/mmcblk'* ]; then device=$device'p'
-if [ $device = '/dev/loop'* ]; then device=$device'p'
+if [[ $device = '/dev/mmcblk'* ]]
+	then device=$device'p'
+fi
+if [[ $device = '/dev/loop'* ]]
+	then device=$device'p'
+fi
+echo $device
+
 BOOT=$device'1'
 ROOT=$device'2'
 echo 'ROOT = '$ROOT
@@ -23,7 +29,7 @@ echo 'BOOT = '$BOOT
 echo -e '\nProceed?[Y/n]'
 read -n1 ans
 
-if [ ${ans,,} != 'y' ]; then exit 1; fi
+if [ ${ans,,} != 'y' ] >/dev/null 2>&1; then exit 1; fi
 
 echo 'Download ArchLinux core filesystem...'
 wget -c http://os.archlinuxarm.org/os/ArchLinuxARM-odroid-n2-latest.tar.gz
