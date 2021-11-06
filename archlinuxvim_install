@@ -52,6 +52,9 @@ echo		# end   sector is default
 echo w		# write MBR
 ) | fdisk $device
 
+echo 'Creating ext4 on /'
+mkfs.ext4 $ROOT
+
 echo 'Creating boot partition from image...'
 xzcat boot.img.xz | dd of=$BOOT
 
