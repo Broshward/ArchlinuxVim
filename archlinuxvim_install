@@ -26,8 +26,9 @@ ROOT=$device'2'
 echo 'ROOT = '$ROOT
 echo 'BOOT = '$BOOT
 
-echo -e '\nProceed?[Y/n]'
+echo -en '\nProceed?[Y/n]: '
 read -n1 ans
+echo -e '\n'
 
 if [ ${ans,,} != 'y' ] >/dev/null 2>&1; then exit 1; fi
 
