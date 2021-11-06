@@ -12,8 +12,6 @@ if [ -b $device ];
 	exit -2;
 fi;
 
-exit
-
 echo 'Target device is '$device
 if [ $device = '/dev/mmcblk'* ]; then device=$device'p'
 if [ $device = '/dev/loop'* ]; then device=$device'p'
