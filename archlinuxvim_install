@@ -38,20 +38,18 @@ wget -c http://os.archlinuxarm.org/os/ArchLinuxARM-odroid-n2-latest.tar.gz
 dd if=/dev/zero of=$device bs=512 count=1 # Remove MBR
 
 (
-echo o
-echo n
-echo p
-echo 1
-echo 2048
-echo +256M
-echo n
-echo n
-echo p
-echo 2
-echo
-echo
-echo n
-echo w
+echo o		# Create a new empty DOS partition table
+echo n		# Create a new partotion
+echo p		# Primary partition
+echo 1		# Number 1 for FAT
+echo		# Default begin sector
+echo +256M	# Size of FAT partition
+echo n		# New part
+echo p		# Primary
+echo 2		# Number 2 for rootfs
+echo		# begin sector is default
+echo		# end   sector is default
+echo w		# write MBR
 ) | fdisk $device
 
 echo 'Creating boot partition from image...'
