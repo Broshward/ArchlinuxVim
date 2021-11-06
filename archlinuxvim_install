@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 if [ $1 = '' ]; 
 	then echo -e "Usage: archlinuxvim_install /dev/targetdevice \n\nFor example:\n# archlinuxvim_install /dev/sdc\n"; 
@@ -15,6 +15,13 @@ fi;
 echo 'Target device is '$device
 BOOT=$device'1'
 ROOT=$device'2'
+echo 'ROOT = '$ROOT
+echo 'BOOT = '$BOOT
+
+echo -e '\nProceed?[Y/n]'
+read -n1 ans
+
+if [ $ans != 'y' ]; then exit 1; fi
 
 echo 'Download ArchLinux core filesystem...'
 wget -c http://os.archlinuxarm.org/os/ArchLinuxARM-odroid-n2-latest.tar.gz
@@ -36,21 +43,25 @@ echo		# end   sector is default
 echo w		# write MBR
 ) | fdisk $device
 
-echo 'Create boot partition from image...'
+echo 'Creating boot partition from image...'
 xzcat boot.img.xz | dd of=$BOOT
 
-ROOT=/mnt/archlinuxvim/root # Temporary dir for mount
-mkdir -p $ROOTDIR
-mount $ROOT $ROOTDIR 
-echo 'Unpackaging root to target...'
-tar -xvf ArchLinuxARM-odroid-n2-latest.tar.gz -C $ROOTDIR >/dev/null 
-rm $ROOTDIR/boot/*
-rm $ROOTDIR/lib/modules/*
-rm $ROOTDIR/usr/src/*
-tar -xvf modules.5.12.0.tar.xz -C $ROOTDIR
-tar -xvf linux-headers.5.12.0.tar.xz -C $ROOTDIR
+TEMPO=/tmp/archlinuxvim
+echo -e "\nTemporarily dir for mount your device partitions is $TEMPO"
+ROOTDIR=$TEMPO/root # Temporary dir for mount
+echo "ROOTDIR is "$ROOTDIR
+mkdir -p $ROOTDIR || exit -1
 
-BOOT=/mnt/archlinuxvim/boot # Temporary dir for mount
+mount $ROOT $ROOTDIR || exit -2
+echo 'Unpackaging rootfs to target...'
+tar -xvf ArchLinuxARM-odroid-n2-latest.tar.gz -C $ROOTDIR >/dev/null || exit -3
+rm -rf $ROOTDIR/boot/*
+
+echo 'Unpackaging kernel modules to target...'
+rm -rf $ROOTDIR/lib/modules/*
+tar -xvf modules.5.12.0.tar.xz -C $ROOTDIR >/dev/null 
+
+BOOTDIR=$TEMPO/boot # Temporary dir for mount
 mkdir -p $BOOTDIR
 mount $BOOT $BOOTDIR 
 
@@ -59,14 +70,15 @@ BOOT_UUID=$(ls -l /dev/disk/by-uuid/ |grep $(echo $BOOT | cut -d / -f 3) | cut -
 echo 'UUID of ROOT device is '$ROOT_UUID
 echo 'UUID of BOOT device is '$BOOT_UUID
 
+echo "Generate /boot/env.txt for right root device variable..."
 eval "cat <<EOF $(<boot/env.txt_template) EOF" 2> /dev/null > $BOOTDIR/env.txt
+echo "Generate right /etc/fstab for happy booting ArchLinux :)"
 eval "cat <<EOF $(<etc/fstab_template) EOF" 2> /dev/null > $ROOTDIR/etc/fstab
-
 
 umount $ROOTDIR 
 umount $BOOTDIR 
 
-rm -rf /mnt/archlinuxvim/
+rm -rf $TEMPO
 
 
 
