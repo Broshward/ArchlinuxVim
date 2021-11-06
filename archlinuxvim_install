@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ $1 = '' ]; 
 	then echo -e "Usage: archlinuxvim_install /dev/targetdevice \n\nFor example:\n# archlinuxvim_install /dev/sdc\n"; 
@@ -6,13 +6,15 @@ if [ $1 = '' ];
 fi
 
 device=$1
-if ls $device >/dev/null 2>&1; 
+if ![ -b $device ]; 
 	then echo -e; 
 	else echo 'Target device not found!';
 	exit -2;
 fi;
 
 echo 'Target device is '$device
+if [ $device = '/dev/mmcblk'* ]; then device=$device'p'
+if [ $device = '/dev/loop'* ]; then device=$device'p'
 BOOT=$device'1'
 ROOT=$device'2'
 echo 'ROOT = '$ROOT
@@ -21,7 +23,7 @@ echo 'BOOT = '$BOOT
 echo -e '\nProceed?[Y/n]'
 read -n1 ans
 
-if [ $ans != 'y' ]; then exit 1; fi
+if [ ${ans,,} != 'y' ]; then exit 1; fi
 
 echo 'Download ArchLinux core filesystem...'
 wget -c http://os.archlinuxarm.org/os/ArchLinuxARM-odroid-n2-latest.tar.gz
@@ -50,11 +52,11 @@ TEMPO=/tmp/archlinuxvim
 echo -e "\nTemporarily dir for mount your device partitions is $TEMPO"
 ROOTDIR=$TEMPO/root # Temporary dir for mount
 echo "ROOTDIR is "$ROOTDIR
-mkdir -p $ROOTDIR || exit -1
+mkdir -p $ROOTDIR || exit -3
 
-mount $ROOT $ROOTDIR || exit -2
+mount $ROOT $ROOTDIR || exit -4
 echo 'Unpackaging rootfs to target...'
-tar -xvf ArchLinuxARM-odroid-n2-latest.tar.gz -C $ROOTDIR >/dev/null || exit -3
+tar -xvf ArchLinuxARM-odroid-n2-latest.tar.gz -C $ROOTDIR >/dev/null || exit -5
 rm -rf $ROOTDIR/boot/*
 
 echo 'Unpackaging kernel modules to target...'
