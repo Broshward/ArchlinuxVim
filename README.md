@@ -25,17 +25,21 @@ Unfortunately, also simply to copy Linux Kernel and ramfs to "boot" is impossibe
 You can simply load image to your install parts:
 # xzcat ArchLinuxVIM-X.XX.img.xz | dd of=/path/to/target/device
 
+Download the ArchLinuxVIM.img.xz image with unlimited bandwidth from filehosting.org you may here:
+https://www.filehosting.org/file/details/967870/0tN0jPeGJbFYpiHo/ArchLinuxVIM-3.00.img.xz
+or try do this with wget command:
+# wget -c https://download.www21.filehosting.org/b11ce55ee8b60550751cceda22072ae7/ArchLinuxVIM-3.00.img.xz
 
-Or launch archlinuxvim_install automatic script.
+
+Also you can launch archlinuxvim_install automatic script for install ArchLinuxVim on your flash drive.
 But do this at your own peril and risk :))
 For example it works right on my x68_64 ArchLinux working station and ny USB-flash drive.
 
-Try do this from root:
+Try do this from root user:
 # ./archlinuxvim_install /dev/sdb 
-# ./archlinuxvim_install /dev/mmcblk0
-$ sudo ./archlinuxvim_install /dev/sdb
+$ sudo ./archlinuxvim_install /dev/mmcblk0
 
-Also may be needed points shell directly:
+Probably you be needed points shell directly:
 # bash ./archlinuxvim_install /dev/sdb
 
 What install script do:
