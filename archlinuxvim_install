@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ -z $1 ]; 
-	then echo -e "Usage: archlinuxvim_install /dev/targetdevice \n\nFor example:\n# archlinuxvim_install /dev/sdc\n  or:\n# archlinuxvim_install /dev/mmcblk0\n  or:\n# archlinuxvim_install /dev/loop0\n"; 
+	then echo -e "Usage: archlinuxvim_install /dev/targetdevice \n\nFor example:\n$ sudo ./archlinuxvim_install /dev/sdc\n  or:\n# ./archlinuxvim_install /dev/mmcblk0\n  or:\n$ sudo ./archlinuxvim_install /dev/loop0\n"; 
 	exit -1;
 fi
 
@@ -12,17 +12,18 @@ if [ -b $device ];
 	exit -2;
 fi;
 
+device_=$device
 echo 'Target device is '$device
 if [[ $device = '/dev/mmcblk'* ]]
-	then device=$device'p'
+	then device_=$device'p'
 fi
 if [[ $device = '/dev/loop'* ]]
-	then device=$device'p'
+	then device_=$device'p'
 fi
-echo $device
+echo $device_
 
-BOOT=$device'1'
-ROOT=$device'2'
+BOOT=$device_'1'
+ROOT=$device_'2'
 echo 'ROOT = '$ROOT
 echo 'BOOT = '$BOOT
 
@@ -32,31 +33,37 @@ echo -e '\n'
 
 if [ ${ans,,} != 'y' ] >/dev/null 2>&1; then exit 1; fi
 
+echo 'Unmounting device partitions...'
+for i in `seq 1 5`; do 
+	while mount|grep $device_$i >/dev/null; do
+		umount $device_$i
+	done
+done
+
 echo 'Download ArchLinux core filesystem...'
 wget -c http://os.archlinuxarm.org/os/ArchLinuxARM-odroid-n2-latest.tar.gz
 
 dd if=/dev/zero of=$device bs=512 count=1 # Remove MBR
 
 (
-echo o		# Create a new empty DOS partition table
+#echo o		# Create a new empty DOS partition table
 echo n		# Create a new partotion
 echo p		# Primary partition
 echo 1		# Number 1 for FAT
 echo		# Default begin sector
 echo +256M	# Size of FAT partition
+echo y		# Remove 'Linux signature' if it exists
 echo n		# New part
 echo p		# Primary
 echo 2		# Number 2 for rootfs
 echo		# begin sector is default
 echo		# end   sector is default
+echo y		# Remove 'Linux signature' if it exists
 echo w		# write MBR
-) | fdisk $device
+) | fdisk $device 
 
 echo 'Creating ext4 on /'
-mkfs.ext4 $ROOT
-
-echo 'Creating boot partition from image...'
-xzcat boot.img.xz | dd of=$BOOT
+mkfs.ext4 -F $ROOT
 
 TEMPO=/tmp/archlinuxvim
 echo -e "\nTemporarily dir for mount your device partitions is $TEMPO"
@@ -73,17 +80,22 @@ echo 'Unpackaging kernel modules to target...'
 rm -rf $ROOTDIR/lib/modules/*
 tar -xvf modules.tar.xz -C $ROOTDIR >/dev/null 
 
+#echo 'Creating boot partition from image...'
+#xzcat boot.img.xz | dd of=$BOOT
+mkfs.vfat $BOOT
 BOOTDIR=$TEMPO/boot # Temporary dir for mount
 mkdir -p $BOOTDIR
-mount $BOOT $BOOTDIR 
+mount $BOOT $BOOTDIR || exit -6
+echo 'Copy boot files...'
+cp boot/* $BOOTDIR
 
-ROOT_UUID=$(ls -l /dev/disk/by-uuid/ |grep $(echo $ROOT | cut -d / -f 3) | cut -d ' ' -f 10)
-BOOT_UUID=$(ls -l /dev/disk/by-uuid/ |grep $(echo $BOOT | cut -d / -f 3) | cut -d ' ' -f 10)
+ROOT_UUID=$(ls -l /dev/disk/by-uuid/ |grep $(echo $ROOT | cut -d / -f 3) | awk '{print $9}')
+BOOT_UUID=$(ls -l /dev/disk/by-uuid/ |grep $(echo $BOOT | cut -d / -f 3) | awk '{print $9}')
 echo 'UUID of ROOT device is '$ROOT_UUID
 echo 'UUID of BOOT device is '$BOOT_UUID
 
 echo "Generate /boot/VIM3_environment for right root UUID device variable..."
-eval "cat <<EOF $(<boot/VIM3_environmen) EOF" 2> /dev/null > $BOOTDIR/VIM3_environment 
+eval "cat <<EOF $(<boot/VIM3_environment) EOF" 2> /dev/null > $BOOTDIR/VIM3_environment 
 echo "Generate right /etc/fstab for happy booting ArchLinux :)"
 eval "cat <<EOF $(<etc/fstab_template) EOF" 2> /dev/null > $ROOTDIR/etc/fstab
 
@@ -91,6 +103,8 @@ umount $ROOTDIR
 umount $BOOTDIR 
 
 rm -rf $TEMPO
+
+echo 'Good luck usage ;)'
 
 
 
