@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ -z $1 ]; 
-	then echo -e "Usage: archlinuxvim_install /dev/targetdevice \n\nFor example:\n# archlinuxvim_install /dev/sdc\n"; 
+	then echo -e "Usage: archlinuxvim_install /dev/targetdevice \n\nFor example:\n# archlinuxvim_install /dev/sdc\n  or:\n# archlinuxvim_install /dev/mmcblk0\n  or:\n# archlinuxvim_install /dev/loop0\n"; 
 	exit -1;
 fi
 
@@ -71,7 +71,7 @@ rm -rf $ROOTDIR/boot/*
 
 echo 'Unpackaging kernel modules to target...'
 rm -rf $ROOTDIR/lib/modules/*
-tar -xvf modules.5.12.0.tar.xz -C $ROOTDIR >/dev/null 
+tar -xvf modules.tar.xz -C $ROOTDIR >/dev/null 
 
 BOOTDIR=$TEMPO/boot # Temporary dir for mount
 mkdir -p $BOOTDIR
@@ -82,8 +82,8 @@ BOOT_UUID=$(ls -l /dev/disk/by-uuid/ |grep $(echo $BOOT | cut -d / -f 3) | cut -
 echo 'UUID of ROOT device is '$ROOT_UUID
 echo 'UUID of BOOT device is '$BOOT_UUID
 
-echo "Generate /boot/env.txt for right root device variable..."
-eval "cat <<EOF $(<boot/env.txt_template) EOF" 2> /dev/null > $BOOTDIR/env.txt
+echo "Generate /boot/VIM3_environment for right root UUID device variable..."
+eval "cat <<EOF $(<boot/VIM3_environmen) EOF" 2> /dev/null > $BOOTDIR/VIM3_environment 
 echo "Generate right /etc/fstab for happy booting ArchLinux :)"
 eval "cat <<EOF $(<etc/fstab_template) EOF" 2> /dev/null > $ROOTDIR/etc/fstab
 

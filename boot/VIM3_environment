@@ -1,0 +1,10 @@
+#Use this file for your variables sets:
+bootargs=root=UUID=${ROOT_UUID}
+
+#Uncomment this for your images loading:
+
+#kernel_name=zImage
+#uInitrd_name=uInitrd 
+#dtb_name=dtb.img
+#boot_cmd=booti
+
