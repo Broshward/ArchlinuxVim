@@ -16,7 +16,7 @@ Begin of version number of ArchLinuxVIM is target SBC device specific.
 For example 1.xx versions for VIM1 SBC, 2.xx versions for VIM2 device and etc.
 Now I happy have VIM3Pro SBC and I will made for this.
 
-INSTALL
+I̲N̲S̲T̲A̲L̲L̲
 
 Launch archlinuxvim_install bash script for install Archlinux on your device. Try this for root user. For example:
 
@@ -29,7 +29,7 @@ Also you can simply load image to your install parts:
 
 !!! After installation success you must remove linux-ODROID and uboot-ODROID packages and setting up linux-VIM3 and uboot-VIM3 correspondingly.!!!
 
-What install script does:
+W̲h̲a̲t̲ ̲i̲n̲s̲t̲a̲l̲l̲ ̲s̲c̲r̲i̲p̲t̲ ̲d̲o̲e̲s̲:̲
 
 0. Download Archlinux tarball for ODROID-N2.
 1. Delete MBR of your flash or HDD device.
@@ -43,13 +43,13 @@ What install script does:
 8. Generate /etc/fstab and /boot/VIM3_environment bootargs to success launches.
 
 
-TROBLESHOOTING:
+T̲R̲O̲B̲L̲E̲S̲H̲O̲O̲T̲I̲N̲G̲:̲
 
 1. Onboard WiFi not working :(
 2. Onboard sound device not working :((
 3. After resume from suspend to RAM (echo mem > /sys/power/state) system is very slow.
 
-Future work plans:
+F̲u̲t̲u̲r̲e̲ ̲w̲o̲r̲k̲ ̲p̲l̲a̲n̲s̲:̲
 
 1. ADD display and keyboard support in U-BOOT.
 2. Rework Khadas u-boot environment for simplify accelerate loads and for replacing "fatload" commands by filesystem independed the "load" commands. It's pity but the KHADAS company thinks what first partition must be FAT32 :(
