@@ -1,57 +1,56 @@
 # ArchlinuxVim
-Archlinux distro for VIM SBC Platform with Amlogic processors of Khadas company compile.
+This is ArchLinux distro for VIM SBC Platform from Khadas company.
 
-I took Kernel from Ubutu for VIM3 SBC from KHADAS repository:  https://dl.khadas.com/Firmware/VIM3/Ubuntu/SD_USB/VIM3_Ubuntu-server-focal_Linux-5.12_arm64_SD-USB_V1.0.5-210430.img.xz
-I took Archlinux core Filesystem for ODROID-N2 Friendly ARM device:  http://os.archlinuxarm.org/os/ArchLinuxARM-odroid-n2-latest.tar.gz 
-And I have to connect Ubuntu kernel images and Archlinux root system and this seems almost working.
+At first I took Kernel from Ubutu for VIM3 SBC from KHADAS repository and I took Archlinux core Filesystem for ODROID-N2 Friendly ARM device.
+So this project has started.
+And I have to connect Ubuntu kernel images and Archlinux root system and it was bad solve, but it almost works. This scheme becomes basis of 3.00 version.
 
-I am not liked this solve and Ubuntu kernel not gladden for me too and now I try to compile own Kernel image from sources but while my effort failure :) 
-Last time when I had compile process of kernel sources  it was 2.6 version and since many varied))
+At present (3.01 version) already contains own Linux kernel which source compiled for Amlogic G12 platform.
+And this also contains new source compiled for Amlogic platform u-boot loader which starts from built-in Khadas u-boot loader.
+New u-boot still not only can launch new linux kernel, but have very simple little and convenient environment which can also loading your custom environment variables and launch your custom u-boot scripts before linux kernel runs.
 
-Probably you can made it better. Welcome! :)
+For custom environment edit /boot/VIM3_environment file and for launch own u-boot script place one as /boot/VIM3_autoscript.
 
+3.01 version for VIM3 device only.
 Begin of version number of ArchLinuxVIM is target SBC device specific.
 For example 1.xx versions for VIM1 SBC, 2.xx versions for VIM2 device and etc.
 Now I happy have VIM3Pro SBC and I will made for this.
 
-While now I hav't HDMI devices for checking graphical working, I use VIM3 device throught ethernet ssh and debug console only.
-Wlan networking divices not working too. It is bad :(
+Install.
+Launch archlinuxvim_install bash script for install Archlinux on your device. Try this for root user. For example:
 
-The /boot must be separate FAT partiotion for compability with preinstalled in VIM devices U-boot loader and settings of one. 
-It's pity but the KHADAS company thinks what first partition of flashes and SD memories can be FAT only and made default u-boot preferences are FAT-dependent.
-Unfortunately, also simply to copy Linux Kernel and ramfs to "boot" is impossibe. Because /boot of KHADAS contains something for u-boot load process needed. Probably there placed U-BOOT himself or his part.
+$sudo ./archlinux_install /dev/mmcblk0
+$sudo ./archlinux_install /dev/sdc
 
-
-You can simply load image to your install parts:
+Also you can simply load image to your install parts:
 # xzcat ArchLinuxVIM-X.XX.img.xz | dd of=/path/to/target/device
 
-Download the ArchLinuxVIM.img.xz image with unlimited bandwidth from filehosting.org you may here:
-https://www.filehosting.org/file/details/967870/0tN0jPeGJbFYpiHo/ArchLinuxVIM-3.00.img.xz
-or try do this with wget command:
-# wget -c https://download.www21.filehosting.org/b11ce55ee8b60550751cceda22072ae7/ArchLinuxVIM-3.00.img.xz
+!!! After installation success you must remove linux-ODROID and uboot-ODROID packages and setting up linux-VIM3 and uboot-VIM3 correspondingly.!!!
+
+What install script does:
+0. Download Archlinux tarball for ODROID-N2.
+1. Delete MBR of your flash or HDD device.
+2. Create 1-st part for /boot and 2-nd part for /root.
+3. Formatting /boot partition to VFAT.
+4. Formatting /root partition to ext4.
+5. Mount /root and unpackage Archlinux tarball as rootfs.
+6. Remove ODROID kernel modules
+7. Extract kernel modules to /lib/modules.
+8. Mount /boot and copy images and boot files to him.
+8. Generate /etc/fstab and /boot/VIM3_environment bootargs to success launches.
 
 
-Also you can launch archlinuxvim_install automatic script for install ArchLinuxVim on your flash drive.
-But do this at your own peril and risk :))
-For example it works right on my x68_64 ArchLinux working station and ny USB-flash drive.
+TROBLESHOOTING:
+1. Onboard WiFi not working :(
+2. Onboard sound device not working :((
+3. After resume from suspend to RAM (echo mem > /sys/power/state) system is very slow.
 
-Try do this from root user:
-# ./archlinuxvim_install /dev/sdb 
-$ sudo ./archlinuxvim_install /dev/mmcblk0
+Future work plans:
+1. ADD display and keyboard support in U-BOOT.
+2. Rework Khadas u-boot environment for simplify accelerate loads and for replacing "fatload" commands by filesystem independed the "load" commands. It's pity but the KHADAS company thinks what first partition must be FAT32 :(
 
-Probably you be needed points shell directly:
-# bash ./archlinuxvim_install /dev/sdb
 
-What install script do:
-0. Download Archlinux tarball for ODROID-N2
-1. Delete MBR with table of partitions
-2. Create 1-st part for boot and 2-nd part for root.
-3. Copy the boot image to 1-st part
-4. Make ext4 on 2-nd part
-5. Mount 2-nd part as root
-6. Unpackage Archlinux to rootfs
-7. Remove /boot/*
-8. Remove ODROID kernel modules
-7. Unpackage Ubuntu kernel modules to /lib/modules/
-8. Generate /etc/fstab and /boot/env.txt to success launches.
+
+Probably you can made it better. Welcome! :)
+
 
