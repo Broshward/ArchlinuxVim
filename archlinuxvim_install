@@ -87,10 +87,12 @@ BOOTDIR=$TEMPO/boot # Temporary dir for mount
 mkdir -p $BOOTDIR
 mount $BOOT $BOOTDIR || exit -6
 echo 'Copy boot files...'
-cp boot/* $BOOTDIR
+cd boot/
+cp s905_autoscript u-boot.bin zImage_arch uInitrd_arch meson-g12b-a311d-khadas-vim3.dtb $BOOTDIR
+cd ..
 
-ROOT_UUID=$(ls -l /dev/disk/by-uuid/ |grep $(echo $ROOT | cut -d / -f 3) | awk '{print $9}')
-BOOT_UUID=$(ls -l /dev/disk/by-uuid/ |grep $(echo $BOOT | cut -d / -f 3) | awk '{print $9}')
+ROOT_UUID=$(blkid $ROOT|grep -o ' UUID="[^ ]*'|head -c -2|tail -c +8)
+BOOT_UUID=$(blkid $BOOT|grep -o ' UUID="[^ ]*'|head -c -2|tail -c +8)
 echo 'UUID of ROOT device is '$ROOT_UUID
 echo 'UUID of BOOT device is '$BOOT_UUID
 
