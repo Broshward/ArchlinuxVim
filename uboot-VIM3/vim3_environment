@@ -1,0 +1,33 @@
+dev=mmc
+part=1
+
+bootargs=root=/dev/sda2
+
+bootcmd=setenv dev mmc; for num in "0 1"; do run load_environment; run autoscript; run Archlinux_boot; done; \
+	setenv dev usb; usb start; for num in "0 1 2 3"; do run load_environment; run autoscript; run Archlinux_boot; done; 
+
+
+env_addr=20000000
+env_name=VIM3_environment
+load_environment=if load $dev $num:$part $env_addr $env_name; then env import -t $env_addr; fi
+
+scr_addr=20000000
+scr_name=VIM3_autoscript
+autoscript=if load $dev $num:$part $scr_addr $scr_name; then source $env_addr; fi
+
+kernel_addr=1000000
+kernel_name=zImage_arch
+
+uInitrd_addr=3000000
+uInitrd_name=uInitrd_arch
+
+dtb_addr=4200000
+dtb_name=meson-g12b-a311d-khadas-vim3.dtb
+
+load_kernel=load $dev $num:$part $kernel_addr $kernel_name;
+load_uInitrd=load $dev $num:$part $uInitrd_addr $uInitrd_name;
+load_dtb=load $dev $num:$part $dtb_addr $dtb_name;
+loads=run load_kernel; run load_uInitrd; run load_dtb
+
+boot_cmd=bootm
+Archlinux_boot=run loads; $boot_cmd $kernel_addr $uInitrd_addr $dtb_addr 

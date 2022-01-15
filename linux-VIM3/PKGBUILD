@@ -1,0 +1,68 @@
+# AArch64 for Khadas VIM3 Pro with Amlogic A311 SoC
+# Maintainer: Alexey Kharkovskii <svetonomer@gmail.com>
+
+pkgname=linux-VIM3
+pkgver=5.15
+srcname=linux-$pkgver
+pkgrel=1
+arch=('aarch64')
+url="http://www.kernel.org/"
+license=('GPL2')
+makedepends=('docbook-xsl' 'kmod' 'bc' 'git' 'uboot-VIM3' 'uboot-tools' 'dtc')
+options=('!strip')
+source=("http://www.kernel.org/pub/linux/kernel/v5.x/$srcname.tar.xz"
+        "http://www.kernel.org/pub/linux/kernel/v5.x/patch-${pkgver}.xz"
+        'config'
+		)
+md5sums=('071d49ff4e020d58c04f9f3f76d3b594'
+         'f5dd39da503b6fbb6de75cd33b2e62d8'
+         '33475162e06cd843f05d9a90959849b0'
+		 )
+
+prepare() {
+	cd "$srcname"
+	echo ${srcdir}
+	echo "Preparing package..."
+
+  # add upstream patch
+#  git apply --whitespace=nowarn ../patch-${pkgver}
+
+  # ALARM patches
+#  git apply ../0001-net-smsc95xx-Allow-mac-address-to-be-set-as-a-parame.patch
+#  git apply ../0002-arm64-dts-rockchip-disable-pwm0-on-rk3399-firefly.patch
+
+  cp "${srcdir}/config" .config
+}
+
+build() {
+	cd "$srcname"
+	echo "Building sources..."
+	make 
+}
+
+package() {
+	cd "$srcname"
+	mkdir $pkgdir/boot
+
+#	echo "Installing Kernel Image..."
+#	INSTALL_PATH="$pkgdir/boot/" make install
+
+	echo "Installing Kernel Modules..."
+	INSTALL_MOD_PATH="$pkgdir/usr" make modules_install
+
+	echo "Generate U-BOOT Kernel image..."
+	objcopy -O binary -R .note -R .comment -S vmlinux linux.bin
+	gzip -f -9 linux.bin
+	mkimage -A arm64 -O linux -T kernel -C gzip -a 0 -e 0 -n "Linux Kernel Image" -d linux.bin.gz $pkgdir/boot/zImage_arch
+#	mkimage -A arm64 -O linux -T kernel -a 0x1000000 -C lz4 -d vmlinux $pkgdir/boot/zImage_arch
+	
+	echo "Generate Initial Ramdisk..."
+	mkinitcpio -r $pkgdir/usr -k $pkgver.0-ARCH -z gzip -g initramfs-linux.img
+
+	echo "Generate U-BOOT Ramdisk image..."
+	mkimage -A arm64 -O linux -T ramdisk -C gzip -d initramfs-linux.img $pkgdir/boot/uInitrd_arch
+
+	echo "Copy device blob file..."
+	cp arch/arm64/boot/dts/amlogic/meson-g12b-a311d-khadas-vim3.dtb $pkgdir/boot/
+	#mkimage -A arm64 -O linux -T kernel -C none -d arch/arm64/boot/dts/amlogic/meson-g12b-a311d-khadas-vim3.dtb $pkgdir/boot/dtb.img
+}

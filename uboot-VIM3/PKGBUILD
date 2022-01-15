@@ -1,0 +1,65 @@
+# AArch64 for Khadas VIM3 Pro with Amlogic A311 SoC
+# Maintainer: Alexey Kharkovskii <svetonomer@gmail.com>
+
+pkgname=uboot-VIM3
+pkgver=2021.10
+srcname=u-boot
+pkgrel=1
+arch=('aarch64')
+url="https://www.denx.de/wiki/U-Boot"
+license=('GPL2')
+makedepends=('docbook-xsl' 'kmod' 'bc' 'git' 'uboot-tools' 'dtc')
+options=('!strip')
+source=("ftp://ftp.denx.de/pub/u-boot/$srcname-$pkgver.tar.bz2"
+        'config'
+	'vim3_environment'
+)
+md5sums=('f1392080facf59dd2c34096a5fd95d4c'
+         '63accb4322265c3083db68539f67f03a'
+	 'SKIP'
+)
+
+prepare() {
+	cd $srcname-$pkgver
+	echo "Copy config..."
+	cp ${srcdir}/config .config
+	cp ${srcdir}/config .config.old
+	echo "Copy default environment for VIM3..."
+	cp $srcdir/vim3_environment .
+}
+
+build() {
+	cd $srcname-$pkgver
+	echo "Building sources..."
+	make 
+}
+
+package() {
+	cd $srcname-$pkgver
+	mkdir $pkgdir/boot
+	
+	echo 'Installing u-boot.bin'
+	cp u-boot.bin $pkgdir/boot
+	
+#-!- Uncomment this for installing u-boot tools -!-#	
+
+#	echo 'Installing u-boot tools'
+#	cd tools/
+#	mkdir $pkgdir/etc
+#	cp env/fw_env.config	$pkgdir/etc/
+#	mkdir -p $pkgdir/usr/bin/
+#	cp dumpimage			$pkgdir/usr/bin/
+#	cp fit_check_sign		$pkgdir/usr/bin/
+#	cp fit_info				$pkgdir/usr/bin/
+#	cp mkenvimage			$pkgdir/usr/bin/
+#	cp mkimage				$pkgdir/usr/bin/
+#	cp netconsole			$pkgdir/usr/bin/
+#	cp proftool				$pkgdir/usr/bin/
+#
+#	cd ../doc/
+#	gzip kwboot.1 
+#	gzip mkimage.1
+#	mkdir -p $pkgdir/usr/share/man/man1/
+#	cp kwboot.1.gz			$pkgdir/usr/share/man/man1/ 
+#	cp mkimage.1.gz			$pkgdir/usr/share/man/man1/ 
+} 
