@@ -8,6 +8,7 @@ pkgrel=1
 arch=('aarch64')
 url="http://www.kernel.org/"
 license=('GPL2')
+provides=("linux=${pkgver}")
 makedepends=('docbook-xsl' 'kmod' 'bc' 'git' 'uboot-VIM3' 'uboot-tools' 'dtc')
 options=('!strip')
 source=("http://www.kernel.org/pub/linux/kernel/v5.x/$srcname.tar.xz"

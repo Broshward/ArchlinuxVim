@@ -5,7 +5,7 @@ At first I took Kernel from Ubutu for VIM3 SBC from KHADAS repository and I took
 So this project has started.
 And I have to connect Ubuntu kernel images and Archlinux root system and it was bad solve, but it almost works. This scheme becomes basis of 3.00 version.
 
-At present (3.01 version) already contains own Linux kernel which source compiled for Amlogic G12 platform.
+At present (3.01 version) already contains own Linux kernel (v5.15) which source compiled for Amlogic G12 platform.
 And this also contains new source compiled for Amlogic platform u-boot loader which starts from built-in Khadas u-boot loader.
 New u-boot still not only can launch new linux kernel, but have very simple little and convenient environment which can also loading your custom environment variables and launch your custom u-boot scripts before linux kernel runs.
 
@@ -14,7 +14,7 @@ For custom environment edit /boot/VIM3_environment file and for launch own u-boo
 3.01 version for VIM3 device only.
 Begin of version number of ArchLinuxVIM is target SBC device specific.
 For example 1.xx versions for VIM1 SBC, 2.xx versions for VIM2 device and etc.
-Now I happy have VIM3Pro SBC and I will made for this.
+Now I happy have VIM3 Pro SBC and I will made for this.
 
 I̲N̲S̲T̲A̲L̲L̲
 
