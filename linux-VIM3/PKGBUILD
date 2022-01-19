@@ -1,23 +1,23 @@
 # AArch64 for Khadas VIM3 Pro with Amlogic A311 SoC
 # Maintainer: Alexey Kharkovskii <svetonomer@gmail.com>
-
-pkgname=linux-VIM3
-pkgver=5.15
+pkgbase=linux
+pkgname="$pkgbase-VIM3"
+pkgver=5.16.1
 srcname=linux-$pkgver
 pkgrel=1
 arch=('aarch64')
 url="http://www.kernel.org/"
 license=('GPL2')
-provides=("linux=${pkgver}")
+provides=("linux=${pkgver}" "$pkgbase-VIM3-headers=${pkgver}")
 makedepends=('docbook-xsl' 'kmod' 'bc' 'git' 'uboot-VIM3' 'uboot-tools' 'dtc')
 options=('!strip')
 source=("http://www.kernel.org/pub/linux/kernel/v5.x/$srcname.tar.xz"
         "http://www.kernel.org/pub/linux/kernel/v5.x/patch-${pkgver}.xz"
         'config'
 		)
-md5sums=('071d49ff4e020d58c04f9f3f76d3b594'
-         'f5dd39da503b6fbb6de75cd33b2e62d8'
-         '33475162e06cd843f05d9a90959849b0'
+md5sums=('121e4f65cf16ff76527020ea596fa431'
+         'd571392436365678b420e4dece216514'
+         'd1e119dbbf5c0bdf421bb874666e167e'
 		 )
 
 prepare() {
@@ -25,14 +25,7 @@ prepare() {
 	echo ${srcdir}
 	echo "Preparing package..."
 
-  # add upstream patch
-#  git apply --whitespace=nowarn ../patch-${pkgver}
-
-  # ALARM patches
-#  git apply ../0001-net-smsc95xx-Allow-mac-address-to-be-set-as-a-parame.patch
-#  git apply ../0002-arm64-dts-rockchip-disable-pwm0-on-rk3399-firefly.patch
-
-  cp "${srcdir}/config" .config
+	cp "${srcdir}/config" .config
 }
 
 build() {
@@ -45,25 +38,104 @@ package() {
 	cd "$srcname"
 	mkdir $pkgdir/boot
 
-#	echo "Installing Kernel Image..."
-#	INSTALL_PATH="$pkgdir/boot/" make install
-
 	echo "Installing Kernel Modules..."
 	INSTALL_MOD_PATH="$pkgdir/usr" make modules_install
+	make -s kernelrelease > version
 
-	echo "Generate U-BOOT Kernel image..."
+	echo "Generating U-BOOT Kernel image..."
 	objcopy -O binary -R .note -R .comment -S vmlinux linux.bin
 	gzip -f -9 linux.bin
 	mkimage -A arm64 -O linux -T kernel -C gzip -a 0 -e 0 -n "Linux Kernel Image" -d linux.bin.gz $pkgdir/boot/zImage_arch
-#	mkimage -A arm64 -O linux -T kernel -a 0x1000000 -C lz4 -d vmlinux $pkgdir/boot/zImage_arch
+	#gzip -9k vmlinux
+	#mkimage -A arm64 -O linux -T kernel -C gzip -d vmlinux.gz $pkgdir/boot/zImage_arch
 	
-	echo "Generate Initial Ramdisk..."
-	mkinitcpio -r $pkgdir/usr -k $pkgver.0-ARCH -z gzip -g initramfs-linux.img
+	kernver="$(make -s kernelrelease)"
+	echo "Generating Initial Ramdisk..."
+	mkinitcpio -r $pkgdir/usr -k $kernver -z gzip -g initramfs-linux.img
 
-	echo "Generate U-BOOT Ramdisk image..."
+	echo "Generating U-BOOT Ramdisk image..."
 	mkimage -A arm64 -O linux -T ramdisk -C gzip -d initramfs-linux.img $pkgdir/boot/uInitrd_arch
 
 	echo "Copy device blob file..."
 	cp arch/arm64/boot/dts/amlogic/meson-g12b-a311d-khadas-vim3.dtb $pkgdir/boot/
-	#mkimage -A arm64 -O linux -T kernel -C none -d arch/arm64/boot/dts/amlogic/meson-g12b-a311d-khadas-vim3.dtb $pkgdir/boot/dtb.img
 }
+
+#package_linux-VIM3-headers(){
+#  pkgdesc="Header files and scripts for building modules for linux kernel - ${pkgver}"
+#  provides=("linux-headers=${pkgver}")
+#  conflicts=('linux-headers')
+#
+#  cd ${srcname}
+#  KARCH=arm64
+#  local builddir="${pkgdir}/usr/lib/modules/${kernver}/build"
+#
+#  echo "Installing build files..."
+#  echo "Current dir "$PWD
+#  install -Dt "$builddir" -m644 .config Makefile Module.symvers System.map vmlinux
+#  install -Dt "$builddir/kernel" -m644 kernel/Makefile
+#  install -Dt "$builddir/arch/${KARCH}" -m644 arch/${KARCH}/Makefile
+#  cp -t "$builddir" -a scripts
+#
+#  # add xfs and shmem for aufs building
+#  mkdir -p "$builddir"/{fs/xfs,mm}
+#
+#  echo "Installing headers..."
+#  cp -t "$builddir" -a include
+#  cp -t "$builddir/arch/${KARCH}" -a arch/${KARCH}/include
+#  install -Dt "$builddir/arch/${KARCH}/kernel" -m644 arch/${KARCH}/kernel/asm-offsets.s
+#  mkdir -p "$builddir/arch/arm"
+#  cp -t "$builddir/arch/arm" -a arch/arm/include
+#
+#  install -Dt "$builddir/drivers/md" -m644 drivers/md/*.h
+#  install -Dt "$builddir/net/mac80211" -m644 net/mac80211/*.h
+#
+#  # https://bugs.archlinux.org/task/13146
+#  install -Dt "$builddir/drivers/media/i2c" -m644 drivers/media/i2c/msp3400-driver.h
+#
+#  # https://bugs.archlinux.org/task/20402
+#  install -Dt "$builddir/drivers/media/usb/dvb-usb" -m644 drivers/media/usb/dvb-usb/*.h
+#  install -Dt "$builddir/drivers/media/dvb-frontends" -m644 drivers/media/dvb-frontends/*.h
+#  install -Dt "$builddir/drivers/media/tuners" -m644 drivers/media/tuners/*.h
+#
+#  # https://bugs.archlinux.org/task/71392
+#  install -Dt "$builddir/drivers/iio/common/hid-sensors" -m644 drivers/iio/common/hid-sensors/*.h
+#
+#  echo "Installing KConfig files..."
+#  find . -name 'Kconfig*' -exec install -Dm644 {} "$builddir/{}" \;
+#
+#  echo "Removing unneeded architectures..."
+#  local arch
+#  for arch in "$builddir"/arch/*/; do
+#    [[ $arch = */${KARCH}/ || $arch == */arm/ ]] && continue
+#    echo "Removing $(basename "$arch")"
+#    rm -r "$arch"
+#  done
+#
+#  echo "Removing documentation..."
+#  rm -r "$builddir/Documentation"
+#
+#  echo "Removing broken symlinks..."
+#  find -L "$builddir" -type l -printf 'Removing %P\n' -delete
+#
+#  echo "Removing loose objects..."
+#  find "$builddir" -type f -name '*.o' -printf 'Removing %P\n' -delete
+#
+#  echo "Stripping build tools..."
+#  local file
+#  while read -rd '' file; do
+#    case "$(file -bi "$file")" in
+#      application/x-sharedlib\;*)      # Libraries (.so)
+#        strip -v $STRIP_SHARED "$file" ;;
+#      application/x-archive\;*)        # Libraries (.a)
+#        strip -v $STRIP_STATIC "$file" ;;
+#      application/x-executable\;*)     # Binaries
+#        strip -v $STRIP_BINARIES "$file" ;;
+#      application/x-pie-executable\;*) # Relocatable binaries
+#        strip -v $STRIP_SHARED "$file" ;;
+#    esac
+#  done < <(find "$builddir" -type f -perm -u+x ! -name vmlinux -print0)
+#
+#  echo "Adding symlink..."
+#  mkdir -p "$pkgdir/usr/src"
+#  ln -sr "$builddir" "$pkgdir/usr/src/$pkgbase"
+#}
