@@ -1,3 +1,5 @@
+*Archlinux is like a river into which impossible entering twice. 
+
 # ArchlinuxVim
 This is ArchLinux distro for VIM SBC Platform from Khadas company.
 
@@ -46,14 +48,15 @@ W̲h̲a̲t̲ ̲i̲n̲s̲t̲a̲l̲l̲ ̲s̲c̲r̲i̲p̲t̲ ̲d̲o̲e̲s̲:̲
 T̲R̲O̲B̲L̲E̲S̲H̲O̲O̲T̲I̲N̲G̲:̲
 
 1. Onboard WiFi not working :(
-2. Onboard sound device not working :((
+2. Onboard sound device not working too :((
 3. After resume from suspend to RAM (echo mem > /sys/power/state) system is very slow.
 4. Sometimes when copy big data to USB device SBC VIM3 freezes with "Kernel panic, not syncing".
+5. Opengl is slow
 
 F̲u̲t̲u̲r̲e̲ ̲w̲o̲r̲k̲ ̲p̲l̲a̲n̲s̲:̲
 
 1. ADD display and keyboard support in U-BOOT.
-2. Rework Khadas u-boot environment for simplify accelerate loads and for replacing "fatload" commands by filesystem independed the "load" commands. It's pity but the KHADAS company thinks what first partition must be FAT32 :(
+2. Rework Khadas u-boot environment for simplify accelerate loads and for replacing "fatload" commands by filesystem independed the "load" commands. It's pity but the KHADAS company thinks what first partition of disk can be FAT32 only :(
 
 
 
