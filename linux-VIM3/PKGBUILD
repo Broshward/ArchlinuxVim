@@ -14,11 +14,13 @@ makedepends=('docbook-xsl' 'kmod' 'bc' 'git' 'uboot-VIM3' 'uboot-tools' 'dtc')
 source=("http://www.kernel.org/pub/linux/kernel/v5.x/$srcname.tar.xz"
         "http://www.kernel.org/pub/linux/kernel/v5.x/patch-${pkgver}.xz"
         'config'
-		)
+	'uart3.patch'
+)
 md5sums=('121e4f65cf16ff76527020ea596fa431'
          'd571392436365678b420e4dece216514'
-         'd1e119dbbf5c0bdf421bb874666e167e'
-		 )
+	 '6dd7b3521223c67e4d25314c333c5c57'
+	 'da8abb76cae74cc7bd75a00b403ca70c'
+	 )
 
 prepare() {
 	cd "$srcname"
@@ -26,6 +28,7 @@ prepare() {
 	echo "Preparing package..."
 
 	cp "${srcdir}/config" .config
+	patch --strip=1 --input="${srcdir}/uart3.patch"
 }
 
 build() {
