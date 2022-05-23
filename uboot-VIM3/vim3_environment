@@ -4,7 +4,7 @@ part=1
 bootargs=root=/dev/sda2
 
 bootcmd=setenv dev mmc; for num in "0 1"; do run load_environment; run autoscript; run Archlinux_boot; done; \
-	setenv dev usb; usb start; for num in "0 1 2 3"; do run load_environment; run autoscript; run Archlinux_boot; done; 
+	setenv dev usb; usb start; usb reset; for num in "0 1 2 3"; do run load_environment; run autoscript; run Archlinux_boot; done; 
 
 
 env_addr=20000000
