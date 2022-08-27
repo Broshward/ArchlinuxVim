@@ -2,7 +2,7 @@
 # Maintainer: Alexey Kharkovskii <svetonomer@gmail.com>
 pkgbase=linux
 pkgname="$pkgbase-VIM3"
-pkgver=5.16.1
+pkgver=5.19.4
 srcname=linux-$pkgver
 pkgrel=1
 arch=('aarch64')
@@ -16,11 +16,10 @@ source=("http://www.kernel.org/pub/linux/kernel/v5.x/$srcname.tar.xz"
         'config'
 	'uart3.patch'
 )
-md5sums=('121e4f65cf16ff76527020ea596fa431'
-         'd571392436365678b420e4dece216514'
-	 '6dd7b3521223c67e4d25314c333c5c57'
-	 'da8abb76cae74cc7bd75a00b403ca70c'
-	 )
+md5sums=('265cc2d141ebcfaad7d5c62e85b38c0e'
+         'd89c87a448cca0f1192666e538984761'
+         '36093237048ea7b94004bcd80f8283ca'
+         'da8abb76cae74cc7bd75a00b403ca70c')
 
 prepare() {
 	cd "$srcname"
