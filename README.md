@@ -18,18 +18,24 @@ Begin of version number of ArchLinuxVIM is target SBC device specific.
 For example 1.xx versions for VIM1 SBC, 2.xx versions for VIM2 device and etc.
 Now I happy have VIM3 Pro SBC and I will made for this.
 
-I̲N̲S̲T̲A̲L̲L̲
+I̲N̲S̲T̲A̲L̲L̲:
 
 Launch archlinuxvim_install bash script for install Archlinux on your device. Try this for root user. For example:
 
 $sudo ./archlinux_install /dev/mmcblk0
+
+or
+
 $sudo ./archlinux_install /dev/sdc
 
+or
+
+!!! After installation success you must remove linux-ODROID-n2 and uboot-ODROID-n2 packages and setting up linux-VIM3 and uboot-VIM3 correspondingly!!!
 
 Also you can simply load image to your install parts:
-# xzcat ArchLinuxVIM-X.XX.img.xz | dd of=/path/to/target/device
 
-!!! After installation success you must remove linux-ODROID and uboot-ODROID packages and setting up linux-VIM3 and uboot-VIM3 correspondingly.!!!
+\# xzcat ArchLinuxVIM-X.XX.img.xz | dd of=/path/to/target/device
+
 
 W̲h̲a̲t̲ ̲i̲n̲s̲t̲a̲l̲l̲ ̲s̲c̲r̲i̲p̲t̲ ̲d̲o̲e̲s̲:̲
 
