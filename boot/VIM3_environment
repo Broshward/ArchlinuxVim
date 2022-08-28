@@ -1,5 +1,6 @@
 #Use this file for your variables sets:
 bootargs=root=UUID=${ROOT_UUID}
+loads=run load_kernel && run load_uInitrd && run load_dtb
 
 #Uncomment this for your images loading:
 

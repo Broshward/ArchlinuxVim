@@ -50,8 +50,7 @@ T̲R̲O̲B̲L̲E̲S̲H̲O̲O̲T̲I̲N̲G̲:̲
 1. Onboard WiFi not working :(
 2. Onboard sound device not working too :((
 3. After resume from suspend to RAM (echo mem > /sys/power/state) system is very slow.
-4. Sometimes when copy big data to USB device SBC VIM3 freezes with "Kernel panic, not syncing".
-5. Opengl is slow
+4. Opengl is slow
 
 F̲u̲t̲u̲r̲e̲ ̲w̲o̲r̲k̲ ̲p̲l̲a̲n̲s̲:̲
 
