@@ -1,0 +1,32 @@
+# AArch64 for Khadas VIM3 Pro with Amlogic A311 SoC
+# Maintainer: Alex Natalsson <HarmoniesWorlds@gmail.com>
+
+pkgname="xf86-video-meson_g12a_mali_bifrost"
+pkgver="r41p0_01eac0"
+srcname=$pkgname
+pkgrel=1
+arch=('aarch64')
+url="https://github.com/Broshward/meson_g12a_mali_bifrost"
+license=('GPL2')
+depends=("linux" "linux-headers")
+makedepends=('gcc' 'glibc' 'make')
+source=("$pkgname::git+https://github.com/Broshward/meson_g12a_mali_bifrost.git#commit=9dc7024cc5610c53d09bebc43dcab54b09751373"
+		)
+md5sums=('SKIP'
+		 )
+
+prepare() {
+	cd "$srcname"
+}
+
+build() {
+	cd "$srcname"
+	echo "Building sources..."
+	make KDIR=/lib/modules/$(uname -r)/source CONFIG_NAME=config.meson-g12a
+}
+
+package() {
+	cd "$srcname"
+	mkdir -p $pkgdir/usr/lib/modules/$(uname -r)/kernel/drivers/gpu/arm/midgard/
+	cp driver/product/kernel/drivers/gpu/arm/midgard/mali_kbase.ko $pkgdir/usr/lib/modules/$(uname -r)/kernel/drivers/gpu/arm/midgard/
+}
