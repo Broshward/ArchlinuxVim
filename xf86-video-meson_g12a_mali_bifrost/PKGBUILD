@@ -10,7 +10,7 @@ url="https://github.com/Broshward/meson_g12a_mali_bifrost"
 license=('GPL2')
 depends=("linux" "linux-headers")
 makedepends=('gcc' 'glibc' 'make')
-source=("$pkgname::git+https://github.com/Broshward/meson_g12a_mali_bifrost.git#commit=9dc7024cc5610c53d09bebc43dcab54b09751373"
+source=("$pkgname::git+https://github.com/Broshward/meson_g12a_mali_bifrost.git#commit=e12aac2c6e944497f594c144691d0d73e486bf2e"
 		)
 md5sums=('SKIP'
 		 )
