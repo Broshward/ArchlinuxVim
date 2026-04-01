@@ -41,7 +41,7 @@ for i in `seq 1 5`; do
 done
 
 echo 'Download ArchLinux core filesystem...'
-wget -c http://os.archlinuxarm.org/os/ArchLinuxARM-odroid-n2-latest.tar.gz
+wget -c http://os.archlinuxarm.org/os/ArchLinuxARM-aarch64-latest.tar.gz
 
 dd if=/dev/zero of=$device bs=512 count=1 # Remove MBR
 
@@ -73,7 +73,7 @@ mkdir -p $ROOTDIR || exit -3
 
 mount $ROOT $ROOTDIR || exit -4
 echo 'Unpackaging rootfs to target...'
-tar -xvf ArchLinuxARM-odroid-n2-latest.tar.gz -C $ROOTDIR >/dev/null || exit -5
+tar -xvf ArchLinuxARM-aarch64-latest.tar.gz -C $ROOTDIR >/dev/null || exit -5
 rm -rf $ROOTDIR/boot/*
 
 echo 'Unpackaging kernel modules to target...'
