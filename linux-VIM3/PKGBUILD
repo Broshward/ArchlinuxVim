@@ -2,7 +2,7 @@
 # Maintainer: Alexey Kharkovskii <svetonomer@gmail.com>
 pkgbase=linux
 pkgname="$pkgbase-VIM3"
-pkgver=5.19.4
+pkgver=6.19.10
 srcname=linux-$pkgver
 pkgrel=1
 arch=('aarch64')
@@ -11,14 +11,14 @@ license=('GPL2')
 provides=("linux=${pkgver}" "$pkgbase-headers=${pkgver}")
 makedepends=('docbook-xsl' 'kmod' 'bc' 'git' 'uboot-VIM3' 'uboot-tools' 'dtc')
 #options=('!strip')
-source=("http://www.kernel.org/pub/linux/kernel/v5.x/$srcname.tar.xz"
-        "http://www.kernel.org/pub/linux/kernel/v5.x/patch-${pkgver}.xz"
+source=("http://www.kernel.org/pub/linux/kernel/v6.x/$srcname.tar.xz"
+        "http://www.kernel.org/pub/linux/kernel/v6.x/patch-${pkgver}.xz"
         'config'
 	'uart3.patch'
 )
-md5sums=('265cc2d141ebcfaad7d5c62e85b38c0e'
-         'd89c87a448cca0f1192666e538984761'
-         '36093237048ea7b94004bcd80f8283ca'
+md5sums=('c8e125047844efc0f0e0286f6c212bac'
+         'ee6ccafc83a7141547f9ee875555922d'
+         'e1332d83aee5bcd507d22b8eab6b7cb3'
          'da8abb76cae74cc7bd75a00b403ca70c')
 
 prepare() {
@@ -33,7 +33,7 @@ prepare() {
 build() {
 	cd "$srcname"
 	echo "Building sources..."
-	make 
+	make -j6
 }
 
 ##Launch this after building sources or place this to another corresponding PKBUILD
